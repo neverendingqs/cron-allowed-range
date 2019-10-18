@@ -1,0 +1,27 @@
+{
+  "name": "cron-allowed-range",
+  "version": "0.0.1",
+  "description": "Use cron-like expressions to test if a datetime is in an allowed range.",
+  "main": "src/index.js",
+  "scripts": {
+    "deploy": "publish",
+    "test": "echo \"Error: no test specified\" && exit 0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/neverendingqs/cron-allowed-range.git"
+  },
+  "keywords": [
+    "cron",
+    "range"
+  ],
+  "author": "neverendingqs",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/neverendingqs/cron-allowed-range/issues"
+  },
+  "homepage": "https://github.com/neverendingqs/cron-allowed-range#readme",
+  "devDependencies": {
+    "publish-me-maybe": "^1.0.1"
+  }
+}
