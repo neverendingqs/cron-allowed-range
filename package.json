@@ -5,7 +5,8 @@
   "main": "src/index.js",
   "scripts": {
     "deploy": "publish",
-    "test": "mocha test/**/*.js"
+    "test": "nyc --reporter=html --reporter=text mocha test/**/*.js",
+    "test:coverage": "nyc report --reporter=text-lcov | coveralls"
   },
   "repository": {
     "type": "git",
@@ -23,7 +24,11 @@
   "homepage": "https://github.com/neverendingqs/cron-allowed-range#readme",
   "devDependencies": {
     "chai": "^4.2.0",
+    "coveralls": "^3.0.7",
     "mocha": "^6.2.1",
     "publish-me-maybe": "^1.0.1"
+  },
+  "dependencies": {
+    "nyc": "^14.1.1"
   }
 }
