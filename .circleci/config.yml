@@ -34,8 +34,8 @@ jobs:
     executor: node
     steps:
       - *attach_workspace
-      - run: npm test
-      - run: npm test:coverage
+      - run: npm run test
+      - run: npm run test:coverage
 
   deploy:
     executor: node
