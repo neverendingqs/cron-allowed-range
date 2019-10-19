@@ -38,7 +38,7 @@ function isWithinRange(value, ranges) {
   }
 
   return ranges.some(({ start, end }) =>
-    start < end
+    start <= end
       ? value >= start && value <= end
       : value <= start || value >= end
   );

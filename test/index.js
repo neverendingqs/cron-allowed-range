@@ -91,6 +91,27 @@ describe('cron-allowed-range', function() {
   });
 
   describe('isDateAllowed()', function() {
+    describe('minutes', function() {
+      const cr = new CronAllowedRange('11-20,25 * * * *');
+
+      [11, 15, 20, 25].forEach(minutes => {
+        it(`returns true when within range (${minutes})`, function() {
+          const date = new Date(`December 18, 1995 08:${minutes}:59 GMT-0000`);
+          assert.isTrue(
+            cr.isDateAllowed(date)
+          );
+        });
+      });
+
+      [10, 21, 24, 26].forEach(minutes => {
+        it(`returns false when not within range (${minutes})`, function() {
+          const date = new Date(`December 18, 1995 08:${minutes}:59 GMT-0000`);
+          assert.isFalse(
+            cr.isDateAllowed(date)
+          );
+        });
+      });
+    });
     [
       {
         date: new Date('December 18, 1995 08:59:59 GMT-0000'),
