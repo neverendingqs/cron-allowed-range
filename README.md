@@ -1,5 +1,8 @@
 [![CircleCI](https://circleci.com/gh/neverendingqs/cron-allowed-range.svg?style=svg)](https://circleci.com/gh/neverendingqs/cron-allowed-range)
-[![npm version](https://badge.fury.io/js/cron-allowed-range.svg)](https://badge.fury.io/js/cron-allowed-range)
+[![Coverage
+Status](https://coveralls.io/repos/github/neverendingqs/cron-allowed-range/badge.svg?branch=master)](https://coveralls.io/github/neverendingqs/cron-allowed-range?branch=master)
+[![npm
+version](https://badge.fury.io/js/cron-allowed-range.svg)](https://badge.fury.io/js/cron-allowed-range)
 
 # cron-allowed-range
 Use cron-like expressions to test if a datetime is in an allowed range.
