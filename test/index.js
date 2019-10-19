@@ -98,25 +98,34 @@ describe('cron-allowed-range', function() {
      * - Between September to June or on August
      * - Between Monday to Friday
      */
+    // TODO: add more test coverage for minutes and day of month
     const cr = new CronAllowedRange('* 9-17 * 9-6,8 1-5');
 
     [
       {
-        date: new Date('December 17, 1995 09:24:00'),
-        reason: 'it is a Sunday'
-      },
-      {
-        date: new Date('December 18, 1995 08:59:59'),
+        date: new Date('December 18, 1995 08:59:59 GMT-0000'),
         reason: 'it is before 9 AM'
       },
       {
-        date: new Date('December 18, 1995 18:24:00'),
+        date: new Date('December 18, 1995 18:00:00 GMT-0000'),
         reason: 'it is after 5 PM'
       },
       {
-        date: new Date('July 18, 1995 08:24:00'),
+        date: new Date('July 18, 1995 08:30:00 GMT-0000'),
         reason: 'it is on July'
-      }
+      },
+      {
+        date: new Date('December 18, 1995 09:30:00 GMT+0100'),
+        reason: 'it is before 9 AM UTC time'
+      },
+      {
+        date: new Date('December 16, 1995 09:30:00 GMT-0000'),
+        reason: 'it is a Saturday'
+      },
+      {
+        date: new Date('December 17, 1995 09:30:00 GMT-0000'),
+        reason: 'it is a Sunday'
+      },
     ].forEach(({ date, reason }) => {
       it(`returns false because ${reason}`, function() {
         const actual = cr.isDateAllowed(date);
@@ -125,8 +134,8 @@ describe('cron-allowed-range', function() {
     });
 
     [
-      new Date('December 18, 1995 09:00:00'),
-      new Date('August 18, 1995 17:00:00')
+      new Date('December 18, 1995 09:00:00 GMT-0000'),
+      new Date('August 18, 1995 17:00:00 GMT-0000')
     ].forEach(date => {
       it(`returns true for ${date}`, function() {
         const actual = cr.isDateAllowed(date);

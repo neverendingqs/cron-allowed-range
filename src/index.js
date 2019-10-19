@@ -61,10 +61,10 @@ module.exports = class {
   }
 
   isDateAllowed(date) {
-    return isWithinRange(date.getMinutes(), this.minute) &&
-      isWithinRange(date.getHours(), this.hour) &&
-      isWithinRange(date.getMonth() + 1, this.dayOfMonth) &&
-      isWithinRange(date.getDate(), this.month) &&
-      isWithinRange(date.getDay(), this.dayOfWeek);
+    return isWithinRange(date.getUTCMinutes(), this.minute) &&
+      isWithinRange(date.getUTCHours(), this.hour) &&
+      isWithinRange(date.getUTCMonth() + 1, this.dayOfMonth) &&
+      isWithinRange(date.getUTCDate(), this.month) &&
+      isWithinRange(date.getUTCDay(), this.dayOfWeek);
   }
 }
