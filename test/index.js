@@ -179,6 +179,30 @@ describe('cron-allowed-range', function() {
       });
     });
 
+    describe('day of week', function() {
+      const cr = new CronAllowedRange('* * * * 1-3,5');
+
+      [1, 3, 5].forEach(dayOfWeek => {
+        it(`returns true when within range (${dayOfWeek})`, function() {
+          const day = 17 + dayOfWeek;
+          const date = new Date(`December ${day}, 1995 08:10:59 GMT-0000`);
+          assert.isTrue(
+            cr.isDateAllowed(date)
+          );
+        });
+      });
+
+      [0, 4, 6].forEach(dayOfWeek => {
+        it(`returns false when not within range (${dayOfWeek})`, function() {
+          const day = 17 + dayOfWeek;
+          const date = new Date(`December ${day}, 1995 08:10:59 GMT-0000`);
+          assert.isFalse(
+            cr.isDateAllowed(date)
+          );
+        });
+      });
+    });
+
     [
       {
         date: new Date('December 18, 1995 08:59:59 GMT-0000'),
