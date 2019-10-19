@@ -113,13 +113,34 @@ describe('cron-allowed-range', function() {
       });
     });
 
+    describe('hour', function() {
+      const cr = new CronAllowedRange('* 11-20,23 * * *');
+
+      [11, 15, 20, 23].forEach(hour => {
+        it(`returns true when within range (${hour})`, function() {
+          const date = new Date(`December 18, 1995 ${hour}:10:59 GMT-0000`);
+          assert.isTrue(
+            cr.isDateAllowed(date)
+          );
+        });
+      });
+
+      [10, 21, 22, 24].forEach(hour => {
+        it(`returns false when not within range (${hour})`, function() {
+          const date = new Date(`December 18, 1995 ${hour}:10:59 GMT-0000`);
+          assert.isFalse(
+            cr.isDateAllowed(date)
+          );
+        });
+      });
+    });
+
     describe('day of month', function() {
       const cr = new CronAllowedRange('* * 11-20,25 * *');
 
       [11, 15, 20, 25].forEach(dayOfMonth => {
         it(`returns true when within range (${dayOfMonth})`, function() {
           const date = new Date(`December ${dayOfMonth}, 1995 08:10:59 GMT-0000`);
-          date.add
           assert.isTrue(
             cr.isDateAllowed(date)
           );
@@ -129,6 +150,52 @@ describe('cron-allowed-range', function() {
       [10, 21, 24, 26].forEach(dayOfMonth => {
         it(`returns false when not within range (${dayOfMonth})`, function() {
           const date = new Date(`December ${dayOfMonth}, 1995 08:10:59 GMT-0000`);
+          assert.isFalse(
+            cr.isDateAllowed(date)
+          );
+        });
+      });
+    });
+
+    describe('month', function() {
+      const cr = new CronAllowedRange('* * * 11-2,4 *');
+
+      ['November', 'January', 'February', 'April'].forEach(month => {
+        it(`returns true when within range (${month})`, function() {
+          const date = new Date(`${month} 18, 1995 08:10:59 GMT-0000`);
+          assert.isTrue(
+            cr.isDateAllowed(date)
+          );
+        });
+      });
+
+      ['October', 'March', 'May'].forEach(month => {
+        it(`returns false when not within range (${month})`, function() {
+          const date = new Date(`${month} 18, 1995 08:10:59 GMT-0000`);
+          assert.isFalse(
+            cr.isDateAllowed(date)
+          );
+        });
+      });
+    });
+
+    describe('day of week', function() {
+      const cr = new CronAllowedRange('* * * * 1-3,5');
+
+      [1, 3, 5].forEach(dayOfWeek => {
+        it(`returns true when within range (${dayOfWeek})`, function() {
+          const day = 17 + dayOfWeek;
+          const date = new Date(`December ${day}, 1995 08:10:59 GMT-0000`);
+          assert.isTrue(
+            cr.isDateAllowed(date)
+          );
+        });
+      });
+
+      [0, 4, 6].forEach(dayOfWeek => {
+        it(`returns false when not within range (${dayOfWeek})`, function() {
+          const day = 17 + dayOfWeek;
+          const date = new Date(`December ${day}, 1995 08:10:59 GMT-0000`);
           assert.isFalse(
             cr.isDateAllowed(date)
           );

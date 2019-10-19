@@ -32,16 +32,22 @@ function parsePart(part) {
   });
 }
 
-function isWithinRange(value, ranges) {
+function isWithinRange(value, start, end) {
+  if(start === end) {
+    return value === start;
+  }
+
+  return start < end
+    ? value >= start && value <= end
+    : value >= start || value <= end;
+}
+
+function isWithinARange(value, ranges) {
   if(!ranges) {
     return true;
   }
 
-  return ranges.some(({ start, end }) =>
-    start <= end
-      ? value >= start && value <= end
-      : value <= start || value >= end
-  );
+  return ranges.some(({ start, end }) => isWithinRange(value, start, end));
 }
 
 module.exports = class {
@@ -61,10 +67,10 @@ module.exports = class {
   }
 
   isDateAllowed(date) {
-    return isWithinRange(date.getUTCMinutes(), this.minute) &&
-      isWithinRange(date.getUTCHours(), this.hour) &&
-      isWithinRange(date.getUTCDate(), this.dayOfMonth) &&
-      isWithinRange(date.getUTCMonth() + 1, this.month) &&
-      isWithinRange(date.getUTCDay(), this.dayOfWeek);
+    return isWithinARange(date.getUTCMinutes(), this.minute) &&
+      isWithinARange(date.getUTCHours(), this.hour) &&
+      isWithinARange(date.getUTCDate(), this.dayOfMonth) &&
+      isWithinARange(date.getUTCMonth() + 1, this.month) &&
+      isWithinARange(date.getUTCDay(), this.dayOfWeek);
   }
 }
