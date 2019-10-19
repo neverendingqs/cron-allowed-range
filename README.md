@@ -1,3 +1,6 @@
+[![CircleCI](https://circleci.com/gh/neverendingqs/cron-allowed-range.svg?style=svg)](https://circleci.com/gh/neverendingqs/cron-allowed-range)
+[![npm version](https://badge.fury.io/js/cron-allowed-range.svg)](https://badge.fury.io/js/cron-allowed-range)
+
 # cron-allowed-range
 Use cron-like expressions to test if a datetime is in an allowed range.
 
