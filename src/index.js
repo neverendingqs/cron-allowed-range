@@ -63,8 +63,8 @@ module.exports = class {
   isDateAllowed(date) {
     return isWithinRange(date.getUTCMinutes(), this.minute) &&
       isWithinRange(date.getUTCHours(), this.hour) &&
-      isWithinRange(date.getUTCMonth() + 1, this.dayOfMonth) &&
-      isWithinRange(date.getUTCDate(), this.month) &&
+      isWithinRange(date.getUTCDate(), this.dayOfMonth) &&
+      isWithinRange(date.getUTCMonth() + 1, this.month) &&
       isWithinRange(date.getUTCDay(), this.dayOfWeek);
   }
 }
