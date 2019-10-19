@@ -91,16 +91,6 @@ describe('cron-allowed-range', function() {
   });
 
   describe('isDateAllowed()', function() {
-    /* Allowed if it is:
-     * - At any minute
-     * - Between 9 AM - 5 PM
-     * - On any day of the month
-     * - Between September to June or on August
-     * - Between Monday to Friday
-     */
-    // TODO: add more test coverage for minutes and day of month
-    const cr = new CronAllowedRange('* 9-17 * 9-6,8 1-5');
-
     [
       {
         date: new Date('December 18, 1995 08:59:59 GMT-0000'),
@@ -128,6 +118,15 @@ describe('cron-allowed-range', function() {
       },
     ].forEach(({ date, reason }) => {
       it(`returns false because ${reason}`, function() {
+        /* Allowed if it is:
+        * - At any minute
+        * - Between 9 AM - 5 PM
+        * - On any day of the month
+        * - Between September to June or on August
+        * - Between Monday to Friday
+        */
+        const cr = new CronAllowedRange('* 9-17 * 9-6,8 1-5');
+
         const actual = cr.isDateAllowed(date);
         assert.isFalse(actual);
       });
@@ -138,6 +137,14 @@ describe('cron-allowed-range', function() {
       new Date('August 18, 1995 17:00:00 GMT-0000')
     ].forEach(date => {
       it(`returns true for ${date}`, function() {
+        /* Allowed if it is:
+        * - At any minute
+        * - Between 9 AM - 5 PM
+        * - On any day of the month
+        * - Between September to June or on August
+        * - Between Monday to Friday
+        */
+        const cr = new CronAllowedRange('* 9-17 * 9-6,8 1-5');
         const actual = cr.isDateAllowed(date);
         assert.isTrue(actual);
       });
