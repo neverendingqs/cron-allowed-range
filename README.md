@@ -7,13 +7,48 @@ version](https://badge.fury.io/js/cron-allowed-range.svg)](https://badge.fury.io
 # cron-allowed-range
 Use cron-like expressions to test if a datetime is in an allowed range.
 
+## Usage
+
+Note: this library always uses UTC time. It will support timezones in the
+future.
+
+### API
+
 ```sh
 npm install cron-allowed-range
 ```
 
-## Usage
+```js
+const CronAllowedRange = require('cron-allowed-range');
 
-### Legend
+/* Allowed if it is:
+ * - At any minute
+ * - Between 9 AM - 5 PM
+ * - On any day of the month
+ * - Between September to June, or on August
+ * - Between Monday to Friday
+ */
+const cr = new CronAllowedRange('* 9-17 * 9-6,8 1-5');
+
+cr.isDateAllowed(new Date('December 18, 1995 08:59:59 GMT-0000'));
+// false
+
+cr.isDateAllowed(new Date('August 18, 1995 17:00:00 GMT-0000'));
+// true
+```
+
+### CLI
+
+```sh
+npm install -g cron-allowed-range
+
+cr -e "* 9-17 * * *"
+
+echo $?
+# exit code is 0 if within range, otherwise 1
+```
+
+## Formatting the Cron-Like Expression
 
 ```
 * represents any value
@@ -35,26 +70,3 @@ npm install cron-allowed-range
 ```
 <small>_Diagram from
 [Wikipedia](https://en.wikipedia.org/wiki/Cron#Overview)_</small>
-
-### Example
-
-```js
-const CronAllowedRange = require('cron-allowed-range');
-
-/* Allowed if it is:
- * - At any minute
- * - Between 9 AM - 5 PM
- * - On any day of the month
- * - Between September to June, or on August
- * - Between Monday to Friday
- */
-const cr = new CronAllowedRange('* 9-17 * 9-6,8 1-5');
-
-cr.isDateAllowed(new Date('December 18, 1995 08:59:59 GMT-0000'));
-// false
-
-cr.isDateAllowed(new Date('August 18, 1995 17:00:00 GMT-0000'));
-// true
-```
-
-Note: this library always uses UTC time.
