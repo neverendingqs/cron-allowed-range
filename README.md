@@ -39,7 +39,7 @@ cr.isDateAllowed(new Date('August 18, 1995 17:00:00 GMT-0400'));
 ```sh
 npm install -g cron-allowed-range
 
-cr -e "* 9-17 * * *" -t 'America/Toronto'
+cr -e '* 9-17 * * *' -t 'America/Toronto'
 
 echo $?
 # exit code is 0 if current time is within range, otherwise 1
