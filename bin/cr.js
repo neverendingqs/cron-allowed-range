@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 const CronAllowedRange = require('../src');
 
-const usage = `Usage: $0 -e [cron-like expression]
+const usage = `Usage: $0 -e [cron-like expression] -t [timezone]
 
 * represents any value
 , separator (e.g. 5,6)
@@ -18,14 +18,16 @@ const usage = `Usage: $0 -e [cron-like expression]
 
 const argv = require('yargs')
   .usage(usage)
-  .example('$0 -e "* 9-17 * * *"', 'Check if current date time is between 9 AM to 5 PM (UTC)')
+  .example('$0 -e "* 9-17 * * *" -t "America/Toronto"', 'Check if current date time is between 9 AM to 6 PM (America/Toronto)')
   .alias('h', 'help')
-  .demandOption(['e'])
+  .demandOption(['e', 't'])
   .alias('e', 'expression')
   .describe('e', 'Cron-like expression')
+  .alias('t', 'timezone')
+  .describe('t', 'Timezone')
   .argv;
 
-const cr = new CronAllowedRange(argv.expression);
+const cr = new CronAllowedRange(argv.expression, argv.timezone);
 if(cr.isDateAllowed(new Date())) {
   process.exit(0);
 } else {

@@ -9,9 +9,6 @@ Use cron-like expressions to test if a datetime is in an allowed range.
 
 ## Usage
 
-Note: this library always uses UTC time. It will support timezones in the
-future.
-
 ### API
 
 ```sh
@@ -23,17 +20,17 @@ const CronAllowedRange = require('cron-allowed-range');
 
 /* Allowed if it is:
  * - At any minute
- * - Between 9 AM - 5 PM
+ * - Between 9 AM - 6 PM
  * - On any day of the month
  * - Between September to June, or on August
  * - Between Monday to Friday
  */
-const cr = new CronAllowedRange('* 9-17 * 9-6,8 1-5');
+const cr = new CronAllowedRange('* 9-17 * 9-6,8 1-5', 'America/Toronto');
 
-cr.isDateAllowed(new Date('December 18, 1995 08:59:59 GMT-0000'));
+cr.isDateAllowed(new Date('December 18, 1995 08:59:59 GMT-0500'));
 // false
 
-cr.isDateAllowed(new Date('August 18, 1995 17:00:00 GMT-0000'));
+cr.isDateAllowed(new Date('August 18, 1995 17:00:00 GMT-0400'));
 // true
 ```
 
@@ -42,10 +39,10 @@ cr.isDateAllowed(new Date('August 18, 1995 17:00:00 GMT-0000'));
 ```sh
 npm install -g cron-allowed-range
 
-cr -e "* 9-17 * * *"
+cr -e "* 9-17 * * *" -t 'America/Toronto'
 
 echo $?
-# exit code is 0 if within range, otherwise 1
+# exit code is 0 if current time is within range, otherwise 1
 ```
 
 ## Formatting the Cron-Like Expression
