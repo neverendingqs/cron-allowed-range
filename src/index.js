@@ -1,3 +1,5 @@
+const moment = require('moment-timezone');
+
 function parsePart(part) {
   if(part === '*') {
     return null;
@@ -37,9 +39,11 @@ function isWithinRange(value, start, end) {
     return value === start;
   }
 
-  return start < end
+  const isWithinRange = start < end
     ? value >= start && value <= end
     : value >= start || value <= end;
+
+  return isWithinRange;
 }
 
 function isWithinARange(value, ranges) {
@@ -51,7 +55,7 @@ function isWithinARange(value, ranges) {
 }
 
 module.exports = class {
-  constructor(expression) {
+  constructor(expression, timezone = 'GMT') {
     const parts = expression.trim().split(' ');
     if(parts.length !== 5) {
       throw new Error(
@@ -64,13 +68,20 @@ module.exports = class {
     this.dayOfMonth = parsePart(parts[2]);
     this.month = parsePart(parts[3]);
     this.dayOfWeek = parsePart(parts[4]);
+
+    if(!moment.tz.zone(timezone)) {
+      throw new Error(`Invalid timezone string ${timezone}.`);
+    }
+
+    this.timezone = timezone;
   }
 
   isDateAllowed(date) {
-    return isWithinARange(date.getUTCMinutes(), this.minute) &&
-      isWithinARange(date.getUTCHours(), this.hour) &&
-      isWithinARange(date.getUTCDate(), this.dayOfMonth) &&
-      isWithinARange(date.getUTCMonth() + 1, this.month) &&
-      isWithinARange(date.getUTCDay(), this.dayOfWeek);
+    const dateWithTz = moment(date).tz(this.timezone);
+    return isWithinARange(dateWithTz.minute(), this.minute) &&
+      isWithinARange(dateWithTz.hour(), this.hour) &&
+      isWithinARange(dateWithTz.date(), this.dayOfMonth) &&
+      isWithinARange(dateWithTz.month() + 1, this.month) &&
+      isWithinARange(dateWithTz.day(), this.dayOfWeek);
   }
 }

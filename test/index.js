@@ -3,7 +3,7 @@ const assert = require('chai').assert;
 const CronAllowedRange = require('../src/index');
 
 describe('cron-allowed-range', function() {
-  describe('constructor', function() {
+  describe('constructor()', function() {
     ['hello world', '* * * *'].forEach(expression => {
       it(`throws error on invalid expression '${expression}'`, function() {
         assert.throws(
@@ -15,6 +15,10 @@ describe('cron-allowed-range', function() {
 
     it('throws error on non-string parameter', function() {
       assert.throws(() => new CronAllowedRange({}));
+    });
+
+    it('throws error on invalid timezone', function() {
+      assert.throws(() => new CronAllowedRange('* * * * *', 'not-a-valid-tz'));
     });
 
     it('trims the expression before splitting', function() {
@@ -203,63 +207,132 @@ describe('cron-allowed-range', function() {
       });
     });
 
-    [
-      {
-        date: new Date('December 18, 1995 08:59:59 GMT-0000'),
-        reason: 'it is before 9 AM'
-      },
-      {
-        date: new Date('December 18, 1995 18:00:00 GMT-0000'),
-        reason: 'it is after 5 PM'
-      },
-      {
-        date: new Date('July 18, 1995 08:30:00 GMT-0000'),
-        reason: 'it is on July'
-      },
-      {
-        date: new Date('December 18, 1995 09:30:00 GMT+0100'),
-        reason: 'it is before 9 AM UTC time'
-      },
-      {
-        date: new Date('December 16, 1995 09:30:00 GMT-0000'),
-        reason: 'it is a Saturday'
-      },
-      {
-        date: new Date('December 17, 1995 09:30:00 GMT-0000'),
-        reason: 'it is a Sunday'
-      },
-    ].forEach(({ date, reason }) => {
-      it(`returns false because ${reason}`, function() {
-        /* Allowed if it is:
-        * - At any minute
-        * - Between 9 AM - 5 PM
-        * - On any day of the month
-        * - Between September to June or on August
-        * - Between Monday to Friday
-        */
-        const cr = new CronAllowedRange('* 9-17 * 9-6,8 1-5');
+    describe('expression with UTC', function() {
+      [
+        {
+          date: new Date('December 18, 1995 08:59:59 GMT-0000'),
+          reason: 'it is before 9 AM'
+        },
+        {
+          date: new Date('December 18, 1995 18:00:00 GMT-0000'),
+          reason: 'it is after 5 PM'
+        },
+        {
+          date: new Date('July 18, 1995 08:30:00 GMT-0000'),
+          reason: 'it is on July'
+        },
+        {
+          date: new Date('December 18, 1995 09:30:00 GMT+0100'),
+          reason: 'it is before 9 AM UTC time'
+        },
+        {
+          date: new Date('December 16, 1995 09:30:00 GMT-0000'),
+          reason: 'it is a Saturday'
+        },
+        {
+          date: new Date('December 17, 1995 09:30:00 GMT-0000'),
+          reason: 'it is a Sunday'
+        },
+      ].forEach(({ date, reason }) => {
+        it(`returns false because ${reason}`, function() {
+          /* Allowed if it is:
+          * - At any minute
+          * - Between 9 AM - 6 PM
+          * - On any day of the month
+          * - Between September to June or on August
+          * - Between Monday to Friday
+          */
+          const cr = new CronAllowedRange('* 9-17 * 9-6,8 1-5');
 
-        const actual = cr.isDateAllowed(date);
-        assert.isFalse(actual);
+          const actual = cr.isDateAllowed(date);
+          assert.isFalse(actual);
+        });
+      });
+
+      [
+        new Date('December 18, 1995 09:00:00 GMT-0000'),
+        new Date('August 18, 1995 17:00:00 GMT-0000')
+      ].forEach(date => {
+        it(`returns true for ${date}`, function() {
+          /* Allowed if it is:
+          * - At any minute
+          * - Between 9 AM - 6 PM
+          * - On any day of the month
+          * - Between September to June or on August
+          * - Between Monday to Friday
+          */
+          const cr = new CronAllowedRange('* 9-17 * 9-6,8 1-5');
+          const actual = cr.isDateAllowed(date);
+          assert.isTrue(actual);
+        });
       });
     });
 
-    [
-      new Date('December 18, 1995 09:00:00 GMT-0000'),
-      new Date('August 18, 1995 17:00:00 GMT-0000')
-    ].forEach(date => {
-      it(`returns true for ${date}`, function() {
-        /* Allowed if it is:
-        * - At any minute
-        * - Between 9 AM - 5 PM
-        * - On any day of the month
-        * - Between September to June or on August
-        * - Between Monday to Friday
-        */
-        const cr = new CronAllowedRange('* 9-17 * 9-6,8 1-5');
-        const actual = cr.isDateAllowed(date);
-        assert.isTrue(actual);
+    describe('expressions with timezones', function() {
+      [
+        {
+          expression: '* 9-17 * * 1-5',
+          timezone: 'America/Toronto',
+          date: new Date('October 23, 2019 18:00:00 GMT-0400'),
+          reason: 'it is one hour past the allowed range (using GMT-0500)'
+        },
+        {
+          expression: '* 9-17 * * 1-5',
+          timezone: 'America/Toronto',
+          date: new Date('October 23, 2019 08:59:59 GMT-0400'),
+          reason: 'it is one hour before the allowed range (using GMT-0500)'
+        },
+        {
+          expression: '* 9-17 * * 1-5',
+          timezone: 'America/Toronto',
+          date: new Date('October 23, 2019 22:00:00 GMT-0000'),
+          reason: 'it is one hour past the allowed range (using GMT-0000)'
+        },
+        {
+          expression: '* 9-17 * * 1-5',
+          timezone: 'America/Toronto',
+          date: new Date('October 23, 2019 12:59:59 GMT-0000'),
+          reason: 'it is one hour before the allowed range (using GMT-0000)'
+        },
+        {
+          expression: '* 9-17 * * 1-5',
+          timezone: 'America/Toronto',
+          date: new Date('December 18, 1995 13:59:59 GMT-0000'),
+          reason: 'it is one hour before the allowed range (using GMT-0000)'
+        },
+        {
+          expression: '* 9-17 * * 1-5',
+          timezone: 'America/Toronto',
+          date: new Date('December 18, 1995 23:00:00 GMT-0000'),
+          reason: 'it is one hour past the allowed range (using GMT-0000)'
+        }
+
+      ].forEach(({ expression, timezone, date, reason }) => {
+        it(`returns false because ${reason}`, function() {
+          const cr = new CronAllowedRange(expression, timezone);
+          const actual = cr.isDateAllowed(date);
+          assert.isFalse(actual);
+        });
       });
+
+      [
+        new Date('December 18, 1995 09:00:00 GMT-0500'),
+        new Date('August 18, 1995 17:00:00 GMT-0400')
+      ].forEach(date => {
+        it(`returns true for ${date}`, function() {
+          /* Allowed if it is:
+          * - At any minute
+          * - Between 9 AM - 6 PM
+          * - On any day of the month
+          * - Between September to June or on August
+          * - Between Monday to Friday
+          */
+          const cr = new CronAllowedRange('* 9-17 * * 1-5', 'America/Toronto');
+          const actual = cr.isDateAllowed(date);
+          assert.isTrue(actual);
+        });
+      });
+
     });
   });
 });
