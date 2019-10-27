@@ -34,6 +34,24 @@ function parsePart(part) {
   });
 }
 
+function validatePart(timeElementValues, validator){
+  let elements = [], isValid = true;
+
+  if(timeElementValues != null) {
+    timeElementValues.forEach((value)=> {
+      elements = elements.concat(Object.values(value))
+    });
+
+    isValid = elements.every((element)=> element >= validator.min && element <= validator.max );
+
+    if(!isValid){
+      throw new Error(
+        `Invalid time element. Range should be within [${validator.min} - ${validator.max}].`
+      );
+    }
+  }
+}
+
 function isWithinRange(value, start, end) {
   if(start === end) {
     return value === start;
@@ -56,6 +74,14 @@ function isWithinARange(value, ranges) {
 
 module.exports = class {
   constructor(expression, timezone = 'GMT') {
+    const validators = {
+      minute: {min:0,max:59},
+      hour: {min:0,max:23},
+      dayOfMonth: {min:1,max:31},
+      month: {min:1,max:12},
+      dayOfWeek: {min:0,max:6}
+    };
+
     const parts = expression.trim().split(' ');
     if(parts.length !== 5) {
       throw new Error(
@@ -72,6 +98,12 @@ module.exports = class {
     if(!moment.tz.zone(timezone)) {
       throw new Error(`Invalid timezone string ${timezone}.`);
     }
+
+    validatePart(this.minute, validators["minute"]);
+    validatePart(this.hour, validators["hour"]);
+    validatePart(this.dayOfMonth, validators["dayOfMonth"]);
+    validatePart(this.month, validators["month"]);
+    validatePart(this.dayOfWeek, validators["dayOfWeek"]);
 
     this.timezone = timezone;
   }

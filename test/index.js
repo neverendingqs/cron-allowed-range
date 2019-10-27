@@ -13,6 +13,50 @@ describe('cron-allowed-range', function() {
       });
     });
 
+    ['76 9-17 * 2-4,8 3-5'].forEach(expression => {
+      it(`throws error when minute is out of range'${expression}'`, function() {
+        assert.throws(
+          () => new CronAllowedRange(expression),
+          'Invalid time element. Range should be within [0 - 59].'
+        );
+      });
+    });
+    ['5 9-88 * 2-4,8 3-5'].forEach(expression => {
+      it(`throws when hour is out of range'${expression}'`, function() {
+        assert.throws(
+          () => new CronAllowedRange(expression),
+          'Invalid time element. Range should be within [0 - 23].'
+        );
+      });
+    });
+
+    ['5 9-12 89 2-4,8 3-5','5 9-12 0-8 2-4,11 2-5'].forEach(expression => {
+      it(`throws when dayOfMonth is out of range'${expression}'`, function() {
+        assert.throws(
+          () => new CronAllowedRange(expression),
+          'Invalid time element. Range should be within [1 - 31].'
+        );
+      });
+    });
+
+    ['5 9-12 27 3-4,76 1-5','5 9-12 27 0-4,0 1-5'].forEach(expression => {
+      it(`throws when month is out of range'${expression}'`, function() {
+        assert.throws(
+          () => new CronAllowedRange(expression),
+          'Invalid time element. Range should be within [1 - 12].'
+        );
+      });
+    });
+
+    ['5 9-12 27 4-11,10 2-11','5 9-12 27 5-7,10 3-8'].forEach(expression => {
+      it(`throws when dayOfWeek is out of range'${expression}'`, function() {
+        assert.throws(
+          () => new CronAllowedRange(expression),
+          'Invalid time element. Range should be within [0 - 6].'
+        );
+      });
+    });
+
     it('throws error on non-string parameter', function() {
       assert.throws(() => new CronAllowedRange({}));
     });
@@ -30,7 +74,7 @@ describe('cron-allowed-range', function() {
     });
 
     ['5-6-7', '{}', 'a-b', 'a-5', '5 - 6', '3-d'].forEach(part => {
-      it(`throws error on invalid part '${part}'`, function() {
+      it(`throws error on Invalid time element '${part}'`, function() {
         assert.throws(() => new CronAllowedRange(`* * ${part} * *`));
       });
     });
@@ -43,17 +87,28 @@ describe('cron-allowed-range', function() {
       );
     });
 
+    ['0-59 0-23 1-31 1-11,12 0-6'].forEach(expression => {
+      it(`should not throw any error when the values are exactly on the range'${expression}'`, function() {
+        const cr = new CronAllowedRange(expression);
+        assert.sameDeepMembers(cr.minute, [{ start: 0, end: 59 }]);
+        assert.sameDeepMembers(cr.hour, [{ start: 0, end: 23 }]);
+        assert.sameDeepMembers(cr.dayOfMonth, [{ start: 1, end: 31 }]);
+        assert.sameDeepMembers(cr.month, [{ start: 1, end: 11 },{ start: 12, end: 12 }]);
+        assert.sameDeepMembers(cr.dayOfWeek, [{ start: 0, end: 6 }]);
+      });
+    });
+    
     it('sets singleton ranges properly', function() {
-      const cr = new CronAllowedRange('1-2 3-4 5-6 7-8 9-10');
+      const cr = new CronAllowedRange('1-2 3-4 5-6 7-8 2-4');
       assert.sameDeepMembers(cr.minute, [{ start: 1, end: 2 }]);
       assert.sameDeepMembers(cr.hour, [{ start: 3, end: 4 }]);
       assert.sameDeepMembers(cr.dayOfMonth, [{ start: 5, end: 6 }]);
       assert.sameDeepMembers(cr.month, [{ start: 7, end: 8 }]);
-      assert.sameDeepMembers(cr.dayOfWeek, [{ start: 9, end: 10 }]);
+      assert.sameDeepMembers(cr.dayOfWeek, [{ start: 2, end: 4 }]);
     });
 
     it('sets parts with multiple ranges properly', function() {
-      const cr = new CronAllowedRange('1-2,3-4 5-6,7-8 9-10,11-12 13-14,15-16,17-18 19-20');
+      const cr = new CronAllowedRange('1-2,3-4 5-6,7-8 9-10,11-12 3-4,5-6,7-8 0-5');
       assert.sameDeepMembers(
         cr.minute,
         [{ start: 1, end: 2 }, { start: 3, end: 4 }]
@@ -68,10 +123,10 @@ describe('cron-allowed-range', function() {
       );
       assert.sameDeepMembers(
         cr.month,
-        [{ start: 13, end: 14 }, { start: 15, end: 16 }, { start: 17, end: 18 }]
+        [{ start: 3, end: 4 }, { start: 5, end: 6 }, { start: 7, end: 8 }]
       );
       assert.sameDeepMembers(
-        cr.dayOfWeek, [{ start: 19, end: 20 }]
+        cr.dayOfWeek, [{ start: 0, end: 5 }]
       );
     });
 
