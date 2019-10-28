@@ -2,7 +2,7 @@ const assert = require('chai').assert;
 
 const CronAllowedRange = require('../src/index');
 
-describe('cron-allowed-range', function() {
+describe('cron-allowed-range ', function() {
   describe('constructor()', function() {
     ['hello world', '* * * *'].forEach(expression => {
       it(`throws error on invalid expression '${expression}'`, function() {
@@ -14,45 +14,54 @@ describe('cron-allowed-range', function() {
     });
 
     ['76 9-17 * 2-4,8 3-5'].forEach(expression => {
-      it(`throws error when minute is out of range'${expression}'`, function() {
+      it(`throws error when minute is out of range '${expression}'`, function() {
         assert.throws(
           () => new CronAllowedRange(expression),
-          'Invalid time element. Range should be within [0 - 59].'
+          'Invalid time range for minute. Range should be within [0 - 59].'
         );
       });
     });
     ['5 9-88 * 2-4,8 3-5'].forEach(expression => {
-      it(`throws when hour is out of range'${expression}'`, function() {
+      it(`throws when hour is out of range '${expression}'`, function() {
         assert.throws(
           () => new CronAllowedRange(expression),
-          'Invalid time element. Range should be within [0 - 23].'
+          'Invalid time range for hour. Range should be within [0 - 23].'
         );
       });
     });
 
     ['5 9-12 89 2-4,8 3-5','5 9-12 0-8 2-4,11 2-5'].forEach(expression => {
-      it(`throws when dayOfMonth is out of range'${expression}'`, function() {
+      it(`throws when dayOfMonth is out of range '${expression}'`, function() {
         assert.throws(
           () => new CronAllowedRange(expression),
-          'Invalid time element. Range should be within [1 - 31].'
+          'Invalid time range for dayOfMonth. Range should be within [1 - 31].'
         );
       });
     });
 
     ['5 9-12 27 3-4,76 1-5','5 9-12 27 0-4,0 1-5'].forEach(expression => {
-      it(`throws when month is out of range'${expression}'`, function() {
+      it(`throws when month is out of range '${expression}'`, function() {
         assert.throws(
           () => new CronAllowedRange(expression),
-          'Invalid time element. Range should be within [1 - 12].'
+          'Invalid time range for month. Range should be within [1 - 12].'
         );
       });
     });
 
     ['5 9-12 27 4-11,10 2-11','5 9-12 27 5-7,10 3-8'].forEach(expression => {
-      it(`throws when dayOfWeek is out of range'${expression}'`, function() {
+      it(`throws when dayOfWeek is out of range '${expression}'`, function() {
         assert.throws(
           () => new CronAllowedRange(expression),
-          'Invalid time element. Range should be within [0 - 6].'
+          'Invalid time range for dayOfWeek. Range should be within [0 - 6].'
+        );
+      });
+    });
+
+    ['23 9-12 32 4-11,10 2-5','6 9-12 0 5-7,10 3-4'].forEach(expression => {
+      it(`throws when dayOfMonth is just outside the range '${expression}'`, function() {
+        assert.throws(
+          () => new CronAllowedRange(expression),
+          'Invalid time range for dayOfMonth. Range should be within [1 - 31].'
         );
       });
     });
@@ -74,7 +83,7 @@ describe('cron-allowed-range', function() {
     });
 
     ['5-6-7', '{}', 'a-b', 'a-5', '5 - 6', '3-d'].forEach(part => {
-      it(`throws error on Invalid time element '${part}'`, function() {
+      it(`throws error on Invalid time range '${part}'`, function() {
         assert.throws(() => new CronAllowedRange(`* * ${part} * *`));
       });
     });
@@ -88,7 +97,7 @@ describe('cron-allowed-range', function() {
     });
 
     ['0-59 0-23 1-31 1-11,12 0-6'].forEach(expression => {
-      it(`should not throw any error when the values are exactly on the range'${expression}'`, function() {
+      it(`should not throw any error when the values are exactly on the range '${expression}'`, function() {
         const cr = new CronAllowedRange(expression);
         assert.sameDeepMembers(cr.minute, [{ start: 0, end: 59 }]);
         assert.sameDeepMembers(cr.hour, [{ start: 0, end: 23 }]);

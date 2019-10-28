@@ -34,21 +34,19 @@ function parsePart(part) {
   });
 }
 
-function validatePart(timeElementValues, validator){
-  let elements = [], isValid = true;
+function validatePart(timeElementName, timeElementProperties, timeElementValues){
+  let isValid = true;
 
   if(timeElementValues != null) {
-    timeElementValues.forEach((value)=> {
-      elements = elements.concat(Object.values(value))
-    });
+    isValid = timeElementValues
+      .reduce((acc,timeElementValue)=> acc.concat(Object.values(timeElementValue)),[])
+      .every((element)=> element >= timeElementProperties.min && element <= timeElementProperties.max );
+  };
 
-    isValid = elements.every((element)=> element >= validator.min && element <= validator.max );
-
-    if(!isValid){
-      throw new Error(
-        `Invalid time element. Range should be within [${validator.min} - ${validator.max}].`
-      );
-    }
+  if(!isValid){
+    throw new Error(
+      `Invalid time range for ${timeElementName}. Range should be within [${timeElementProperties.min} - ${timeElementProperties.max}].`
+    );
   }
 }
 
@@ -74,12 +72,12 @@ function isWithinARange(value, ranges) {
 
 module.exports = class {
   constructor(expression, timezone = 'GMT') {
-    const validators = {
-      minute: {min:0,max:59},
-      hour: {min:0,max:23},
-      dayOfMonth: {min:1,max:31},
-      month: {min:1,max:12},
-      dayOfWeek: {min:0,max:6}
+    const timeElements = {
+      minute: {partPosition:0, min:0,max:59},
+      hour: {partPosition:1, min:0,max:23},
+      dayOfMonth: {partPosition:2, min:1,max:31},
+      month: {partPosition:3, min:1,max:12},
+      dayOfWeek: {partPosition:4 ,min:0,max:6}
     };
 
     const parts = expression.trim().split(' ');
@@ -89,21 +87,15 @@ module.exports = class {
       );
     }
 
-    this.minute = parsePart(parts[0]);
-    this.hour = parsePart(parts[1]);
-    this.dayOfMonth = parsePart(parts[2]);
-    this.month = parsePart(parts[3]);
-    this.dayOfWeek = parsePart(parts[4]);
-
     if(!moment.tz.zone(timezone)) {
       throw new Error(`Invalid timezone string ${timezone}.`);
     }
 
-    validatePart(this.minute, validators["minute"]);
-    validatePart(this.hour, validators["hour"]);
-    validatePart(this.dayOfMonth, validators["dayOfMonth"]);
-    validatePart(this.month, validators["month"]);
-    validatePart(this.dayOfWeek, validators["dayOfWeek"]);
+    Object.keys(timeElements).forEach((timeElementName)=>{
+      const timeElement = timeElements[timeElementName];
+      this[timeElementName] = parsePart(parts[timeElement.partPosition]);
+      validatePart(timeElementName, timeElement, this[timeElementName]);
+    });
 
     this.timezone = timezone;
   }
