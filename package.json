@@ -1,6 +1,6 @@
 {
   "name": "cron-allowed-range",
-  "version": "0.0.11",
+  "version": "0.0.12",
   "description": "Use cron-like expressions to test if a datetime is in an allowed range.",
   "main": "src/index.js",
   "bin": {
@@ -27,14 +27,14 @@
   "homepage": "https://github.com/neverendingqs/cron-allowed-range#readme",
   "devDependencies": {
     "chai": "^4.2.0",
-    "coveralls": "^3.0.7",
-    "mocha": "^6.2.1",
+    "coveralls": "^3.0.9",
+    "mocha": "^6.2.2",
     "nyc": "^14.1.1",
-    "publish-me-maybe": "^1.0.1"
+    "publish-me-maybe": "^1.0.2"
   },
   "dependencies": {
     "moment": "^2.24.0",
     "moment-timezone": "^0.5.27",
-    "yargs": "^14.2.0"
+    "yargs": "^15.0.2"
   }
 }
