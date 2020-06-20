@@ -27,14 +27,14 @@
   "homepage": "https://github.com/neverendingqs/cron-allowed-range#readme",
   "devDependencies": {
     "chai": "^4.2.0",
-    "coveralls": "^3.0.11",
-    "mocha": "^7.1.1",
-    "nyc": "^15.0.1",
-    "publish-me-maybe": "^1.0.2"
+    "coveralls": "^3.1.0",
+    "mocha": "^8.0.1",
+    "nyc": "^15.1.0",
+    "publish-me-maybe": "^1.0.4"
   },
   "dependencies": {
-    "moment": "^2.24.0",
-    "moment-timezone": "^0.5.28",
+    "moment": "^2.27.0",
+    "moment-timezone": "^0.5.31",
     "yargs": "^15.3.1"
   }
 }
