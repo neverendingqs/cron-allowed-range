@@ -2,6 +2,7 @@ name: Scheduled dependencies update
 on:
   schedule:
     - cron:  '0 15 * * 2'
+  workflow_dispatch:
 jobs:
   update-deps:
     name: Update Node dependencies
