@@ -1,6 +1,6 @@
 {
   "name": "cron-allowed-range",
-  "version": "0.0.20",
+  "version": "0.0.21",
   "description": "Use cron-like expressions to test if a datetime is in an allowed range.",
   "main": "src/index.js",
   "bin": {
@@ -28,7 +28,7 @@
   "devDependencies": {
     "chai": "^4.2.0",
     "coveralls": "^3.1.0",
-    "mocha": "^8.1.1",
+    "mocha": "^8.1.3",
     "nyc": "^15.1.0",
     "publish-me-maybe": "^1.0.7"
   },
