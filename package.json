@@ -1,6 +1,6 @@
 {
   "name": "cron-allowed-range",
-  "version": "0.0.37",
+  "version": "0.0.38",
   "description": "Use cron-like expressions to test if a datetime is in an allowed range.",
   "main": "src/index.js",
   "bin": {
@@ -28,13 +28,13 @@
   "devDependencies": {
     "chai": "^4.3.4",
     "coveralls": "^3.1.1",
-    "mocha": "^9.1.2",
+    "mocha": "^9.1.3",
     "nyc": "^15.1.0",
-    "publish-me-maybe": "^1.0.7"
+    "publish-me-maybe": "^1.0.8"
   },
   "dependencies": {
     "moment": "^2.29.1",
-    "moment-timezone": "^0.5.33",
-    "yargs": "^17.2.1"
+    "moment-timezone": "^0.5.34",
+    "yargs": "^17.3.0"
   }
 }
